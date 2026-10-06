@@ -1,19 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const faqItems = document.querySelectorAll('.faq-item');
+  const faqList = document.querySelector('.faq-list');
+  const faqItems = document.querySelectorAll('.faq-item');
 
-    faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question');
+  if (!faqList) return;
 
-        question.addEventListener('click', () => {
-            const isActive = item.classList.contains('active');
+  function setItemState(item, isOpen) {
+    const question = item.querySelector('.faq-question');
+    const answer = item.querySelector('.faq-answer');
 
-            faqItems.forEach(otherItem => {
-                otherItem.classList.remove('active');
-            });
+    item.classList.toggle('active', isOpen);
 
-            if (!isActive) {
-                item.classList.add('active');
-            }
-        });
+    question.setAttribute('aria-expanded', String(isOpen));
+    answer.setAttribute('aria-hidden', String(!isOpen));
+
+    answer.inert = !isOpen;
+  }
+
+  faqItems.forEach((item, index) => {
+    const question = item.querySelector('.faq-question');
+
+    setItemState(item, index === 0);
+
+    question.addEventListener('click', () => {
+      const isActive = item.classList.contains('active');
+
+      faqItems.forEach(otherItem => {
+        setItemState(otherItem, false);
+      });
+
+      if (!isActive) {
+        setItemState(item, true);
+      }
     });
+  });
+
+  faqList.classList.add('is-enhanced');
 });
